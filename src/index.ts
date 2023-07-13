@@ -1,0 +1,25 @@
+import express from 'express'
+import cors from 'cors'
+import 'dotenv/config'
+//@ts-ignore
+import {MongoClient} from 'mongodb'
+
+const app = express()
+
+app.use(cors())
+app.use(express.json())
+
+const client = new MongoClient(process.env.MONGO_URI)
+const db = client.db('react-form-ts-database')
+
+const customers = db.collection('customers')
+
+app.post('/', async (req, res) => {
+  console.log('req fron frontend -> ', req.body)
+
+  const newCustomer = await customers.insertOne(req.body)
+
+  res.status(200).send(newCustomer)
+})
+
+app.listen(process.env.PORT, () => {console.log('api listening')})
